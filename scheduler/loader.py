@@ -1,14 +1,27 @@
 import pandas as pd
-def load_pocs(file_path):
-    df = pd.read_excel(file_path)
-    available = (
-        df[df["Available"].str.upper() == "Y"]["POC"]
+
+
+def load_pocs(filepath):
+    """
+    Returns only available POCs
+    """
+
+    df = pd.read_excel(filepath)
+
+    available_pocs = (
+        df[df["Available"].str.upper() == "Y"]
+        ["POC"]
         .tolist()
     )
-    return available
 
-def load_tasks(file_path):
-    return pd.read_excel(file_path)
+    return available_pocs
 
-def load_history(file_path):
-    return pd.read_excel(file_path)
+
+def load_tasks(filepath):
+
+    return pd.read_excel(filepath)
+
+
+def load_history(filepath):
+
+    return pd.read_excel(filepath)
