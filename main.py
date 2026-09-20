@@ -1,4 +1,13 @@
-from pathlib import Path
+from config import (
+    AVAILABILITY_FILE,
+    HISTORY_FILE,
+    INDIVIDUAL_WORKLOAD_WEIGHT,
+    OUTPUT_FILE,
+    PAIR_HISTORY_WEIGHT,
+    POCS_FILE,
+    SAME_TABLE_PAIR_WEIGHT,
+    TASKS_FILE,
+)
 
 from scheduler.exporter import export_schedule
 from scheduler.loader import (
@@ -11,53 +20,54 @@ from scheduler.scorer import ScoreWeights
 from scheduler.scheduler import Scheduler
 
 
-BASE_DIR = Path(__file__).resolve().parent
-
-DATA_DIR = BASE_DIR / "data"
-OUTPUT_DIR = BASE_DIR / "output"
-
-
 def main():
-    print("Loading scheduling data...")
+    print("POC Scheduler")
+    print("=" * 50)
 
-    pocs = load_pocs(
-        DATA_DIR / "pocs.xlsx"
-    )
+    print("\nLoading scheduling data...")
 
-    tasks = load_tasks(
-        DATA_DIR / "tasks.xlsx"
-    )
+    pocs = load_pocs(POCS_FILE)
+    tasks = load_tasks(TASKS_FILE)
 
     availability = load_availability(
-        DATA_DIR / "availability.xlsx"
+        AVAILABILITY_FILE
     )
 
     history = load_history(
-        DATA_DIR / "history.xlsx"
+        HISTORY_FILE
     )
 
+    print(f"POCs             : {len(pocs)}")
+    print(f"Tasks            : {len(tasks)}")
     print(
-        f"Loaded {len(pocs)} POCs"
+        f"Availability rows: {len(availability)}"
     )
-
     print(
-        f"Loaded {len(tasks)} tasks"
-    )
-
-    print(
-        f"Loaded {len(availability)} "
-        "availability records"
-    )
-
-    print(
-        f"Loaded {len(history)} "
-        "historical assignments"
+        f"History rows     : {len(history)}"
     )
 
     weights = ScoreWeights(
-        pair_history=10,
-        individual_workload=2,
-        same_table_pair=8,
+        pair_history=PAIR_HISTORY_WEIGHT,
+        individual_workload=(
+            INDIVIDUAL_WORKLOAD_WEIGHT
+        ),
+        same_table_pair=(
+            SAME_TABLE_PAIR_WEIGHT
+        ),
+    )
+
+    print("\nScheduler weights:")
+    print(
+        f"  Pair history       : "
+        f"{weights.pair_history}"
+    )
+    print(
+        f"  Individual workload: "
+        f"{weights.individual_workload}"
+    )
+    print(
+        f"  Same table pair    : "
+        f"{weights.same_table_pair}"
     )
 
     scheduler = Scheduler(
@@ -84,10 +94,7 @@ def main():
         rankings_df=rankings_df,
         pair_statistics_df=pair_statistics_df,
         poc_statistics_df=poc_statistics_df,
-        output_path=(
-            OUTPUT_DIR
-            / "schedule.xlsx"
-        ),
+        output_path=OUTPUT_FILE,
     )
 
     print("\nGenerated schedule:")
@@ -97,10 +104,9 @@ def main():
         )
     )
 
-    print(
-        f"\nSchedule written to:\n"
-        f"{output_path}"
-    )
+    print("\n" + "=" * 50)
+    print("Scheduling completed.")
+    print(f"Output: {output_path}")
 
 
 if __name__ == "__main__":
