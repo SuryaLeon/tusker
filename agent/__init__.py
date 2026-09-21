@@ -1,5 +1,5 @@
-""" agent package."""
+"""Local AI agent package for the POC scheduler."""
 
-from .agent import Agent
+from .agent import SchedulingAgent
 
-__all__ = ["Agent"]
+__all__ = ["SchedulingAgent"]
