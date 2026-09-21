@@ -9,8 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env")
 
 
-def get_path(env_name: str, default: str) -> Path:
-    value = os.getenv(env_name, default)
+def get_path(name: str, default: str) -> Path:
+    value = os.getenv(name, default)
 
     path = Path(value)
 
@@ -19,6 +19,27 @@ def get_path(env_name: str, default: str) -> Path:
 
     return path
 
+
+def get_bool(
+    name: str,
+    default: bool = False,
+) -> bool:
+    value = os.getenv(
+        name,
+        str(default),
+    )
+
+    return value.strip().lower() in {
+        "true",
+        "1",
+        "yes",
+        "y",
+    }
+
+
+# ----------------------------------------------------------
+# Data
+# ----------------------------------------------------------
 
 POCS_FILE = get_path(
     "POCS_FILE",
@@ -46,6 +67,10 @@ OUTPUT_FILE = get_path(
 )
 
 
+# ----------------------------------------------------------
+# Scheduler
+# ----------------------------------------------------------
+
 PAIR_HISTORY_WEIGHT = int(
     os.getenv(
         "PAIR_HISTORY_WEIGHT",
@@ -68,7 +93,9 @@ SAME_TABLE_PAIR_WEIGHT = int(
 )
 
 
-# Future Ollama integration
+# ----------------------------------------------------------
+# Ollama
+# ----------------------------------------------------------
 
 OLLAMA_BASE_URL = os.getenv(
     "OLLAMA_BASE_URL",
@@ -78,4 +105,26 @@ OLLAMA_BASE_URL = os.getenv(
 OLLAMA_MODEL = os.getenv(
     "OLLAMA_MODEL",
     "phi3:latest",
+)
+
+ENABLE_AI_REASONING = get_bool(
+    "ENABLE_AI_REASONING",
+    True,
+)
+
+
+# ----------------------------------------------------------
+# File watcher
+# ----------------------------------------------------------
+
+WATCH_DIRECTORY = get_path(
+    "WATCH_DIRECTORY",
+    "data",
+)
+
+WATCH_DEBOUNCE_SECONDS = float(
+    os.getenv(
+        "WATCH_DEBOUNCE_SECONDS",
+        "2",
+    )
 )

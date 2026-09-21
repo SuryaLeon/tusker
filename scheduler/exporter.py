@@ -7,7 +7,64 @@ from openpyxl.styles import (
     PatternFill,
 )
 from openpyxl.utils import get_column_letter
+from openpyxl.comments import Comment
 
+def _add_schedule_comments(
+    worksheet,
+    schedule_df,
+):
+    headers = {
+        cell.value: cell.column
+        for cell in worksheet[1]
+    }
+
+    score_column = headers.get(
+        "Score"
+    )
+
+    if score_column is None:
+        return
+
+    for index, row in (
+        schedule_df.iterrows()
+    ):
+        excel_row = index + 2
+
+        score = row.get(
+            "Score"
+        )
+
+        reason = row.get(
+            "Reason",
+            "",
+        )
+
+        poc1 = row.get(
+            "POC1",
+            "",
+        )
+
+        poc2 = row.get(
+            "POC2",
+            "",
+        )
+
+        comment_text = (
+            f"Selected pair: "
+            f"{poc1} + {poc2}\n"
+            f"Score: {score}\n\n"
+            f"Reason:\n{reason}"
+        )
+
+        cell = worksheet.cell(
+            row=excel_row,
+            column=score_column,
+        )
+
+        cell.comment = Comment(
+            comment_text,
+            "POC Scheduler",
+        )
 
 def _format_worksheet(worksheet):
     """
